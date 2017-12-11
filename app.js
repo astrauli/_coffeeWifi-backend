@@ -49,18 +49,21 @@ app.get('/', (req, res) => {
 app.post("/users", (req, res) => {
   User.findOne(req.body, (err, docs) => {
     if (err) {
-      console.log(err);
+      console.log("err in finding", err);
       res.json(err);
     } else if (docs === null) {
       User.create(req.body, (err, user) => {
         if (err) {
-          console.log(err);
+          console.log("err in creating", err);
           res.json(err);
         } else {
-          console.log(user);
+          console.log("new user", user);
           res.json(user);
         }
       });
+    } else {
+      console.log("user found");
+      res.json(docs);
     }
   })
 });
