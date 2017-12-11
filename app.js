@@ -51,19 +51,22 @@ app.post("/users", (req, res) => {
     if (err) {
       console.log("err in finding", err);
       res.json(err);
-    } else if (docs === null) {
-      User.create(req.body, (err, user) => {
-        if (err) {
-          console.log("err in creating", err);
-          res.json(err);
-        } else {
-          console.log("new user", user);
-          res.json(user);
-        }
-      });
-    } else if (docs !== null) {
-      console.log("user found");
-      res.json(docs);
     }
+    console.log(docs);
+    // } else if (docs === null) {
+      // User.create(req.body, (err, user) => {
+      //   if (err) {
+      //     console.log("err in creating", err);
+      //     res.json(err);
+      //   } else {
+      //     console.log("new user", user);
+      //     res.json(user);
+      //   }
+      // });
+    //   console.log("NO USER");
+    // } else if (docs !== null) {
+    //   console.log("user found");
+    //   res.json(docs);
+    // }
   })
 });
