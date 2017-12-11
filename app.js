@@ -61,7 +61,7 @@ app.post("/users", (req, res) => {
           res.json(user);
         }
       });
-    } else {
+    } else if (docs !== null) {
       console.log("user found");
       res.json(docs);
     }
