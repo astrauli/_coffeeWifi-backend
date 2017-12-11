@@ -46,20 +46,20 @@ app.get('/', (req, res) => {
 });
 
 app.post("/users", (req, res) => {
-  User.findOne(req.body, (err, docs) => {
-    if (err) {
-      console.log(err);
-      res.json(err);
-    } else if (docs === null) {
-      User.create(req.body, (err, user) => {
-        if (err) {
-          console.log(err);
-          res.json(err);
-        } else {
-          console.log(user);
-          res.json(user);
-        }
-      });
-    }
-  })
+  // User.findOne(req.body, (err, docs) => {
+  //   if (err) {
+  //     console.log(err);
+  //     res.json(err);
+  //   } else if (docs === null) {
+  //     User.create(req.body, (err, user) => {
+  //       if (err) {
+  //         console.log(err);
+  //         res.json(err);
+  //       } else {
+  //         console.log(user);
+  //         res.json(user);
+  //       }
+  //     });
+  //   }
+  // })
 });
