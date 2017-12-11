@@ -21,16 +21,7 @@ db.once('open', () => {
     let port = server.address().port;
     console.log("App now running on port", port);
   });
-  // let newUser = new User({name: "JEFF!#"});
-  // newUser.save((err) => {console.log(err);} )
-  // User.findOne({name: "JEFF!#"}, (err, docs) => {
-  //   if (err) {
-  //     console.log(err);
-  //   }
-  //   console.log(docs);
-  // });
-  // User.find({})
-  //
+
 });
 
 const app = express();
@@ -38,29 +29,14 @@ app.use(bodyParser());
 
 app.get('/testinsert', (req, res) => {
   console.log("on test");
-  console.log();
+  
   res.send("hi")
 })
 
 app.get('/', (req, res) => {
-  res.send("HI THERE")
+  res.send("HI THERE");
 });
 
 app.post("/users", (req, res) => {
-  // User.findOne(req.body, (err, docs) => {
-  //   if (err) {
-  //     console.log(err);
-  //     res.json(err);
-  //   } else if (docs === null) {
-  //     User.create(req.body, (err, user) => {
-  //       if (err) {
-  //         console.log(err);
-  //         res.json(err);
-  //       } else {
-  //         console.log(user);
-  //         res.json(user);
-  //       }
-  //     });
-  //   }
-  // })
+
 });
