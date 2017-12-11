@@ -48,6 +48,11 @@ app.get('/', (req, res) => {
 
 app.post("/users", (req, res) => {
   User.findOne(req.body, (err, docs) => {
+    if (err) {
+      console.log(err);
+      json.res(err)
+    }
+    console.log("err should be null", err);
     console.log("results", docs);
     res.json(docs)
   })
