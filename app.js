@@ -53,6 +53,7 @@ app.post("/users", (req, res) => {
       res.json(err);
     }
     console.log(docs);
+    res.json(docs)
     // } else if (docs === null) {
       // User.create(req.body, (err, user) => {
       //   if (err) {
