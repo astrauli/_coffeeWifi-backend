@@ -70,6 +70,9 @@ app.post("/users", (req, res) => {
 });
 
 app.get('/businesses', (req, res) => {
+  // TODO:
+  //insert logic to fetch shops only a few miles away from current position
+  // Business.find({}).circle('coordinates', {center: req.body.currentPosition, radius: 10, unique: true})
   Business.find({}, (err, docs) => {
     if (err) {
       console.log(err);
