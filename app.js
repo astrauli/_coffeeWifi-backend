@@ -9,9 +9,10 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
 , {useMongoClient: true});
 
 let userSchema = new Schema({
-  name: String,
+  sub: String
 });
-let User = mongoose.model('users', userSchema);
+
+let User = mongoose.model('User', userSchema);
 
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -21,23 +22,9 @@ db.once('open', () => {
     let port = server.address().port;
     console.log("App now running on port", port);
   });
-  // let newUser = new User({name: "JEFF!#"});
-  // newUser.save((err) => {console.log(err);} )
-  // User.findOne({name: "JEFF!#"}, (err, docs) => {
-  //   if (err) {
-  //     console.log(err);
-  //   }
-  //   console.log(docs);
-  // });
-  // User.find({})
-  // User.create({name: 'JEFF'})
-  //
+
 });
 
-const getUsername = (body) => {
-  let query = User.findOne({name: body['name']});
-  return query;
-};
 
 const app = express();
 app.use(bodyParser.urlencoded({
@@ -62,7 +49,15 @@ app.post("/users", (req, res) => {
       console.log("err",  err);
       res.json(err);
     }
-    console.log("user", user);
-    res.json(user)
+    if (user === null) {
+      User.create({sub: req.body.sub}, (err, doc) => {
+        if(err) {
+          console.log(err);
+          res.json(err)
+        }
+        console.log("created user", doc);
+        res.json(doc)
+      })
+    }
   });
 });
