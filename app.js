@@ -5,7 +5,7 @@ import bodyParser from 'body-parser';
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://root:bestappever@ds133856.mlab.com:33856/coffeewifi' ||'mongodb://localhost:27017/test'
 , {useMongoClient: true});
 
 let userSchema = new Schema({
@@ -14,8 +14,10 @@ let userSchema = new Schema({
 
 let businessSchema = new Schema({
   name: String,
-  coordinates: Object
-})
+  loc: { type: {type: String }, coordinates: [Number]}
+});
+businessSchema.index({'loc': '2dsphere'});
+
 
 let User = mongoose.model('User', userSchema);
 let Business = mongoose.model('businesses', businessSchema);
@@ -72,13 +74,41 @@ app.post("/users", (req, res) => {
 app.get('/businesses', (req, res) => {
   // TODO:
   //insert logic to fetch shops only a few miles away from current position
-  // Business.find({}).circle('coordinates', {center: req.body.currentPosition, radius: 10, unique: true})
-  Business.find({}, (err, docs) => {
-    if (err) {
-      console.log(err);
-      res.json(err)
+  // req.body.currentPosition
+  // Business.find(
+  //   { loc:
+  //     { $near :
+  //         {
+  //           $geometry : {
+  //              type : "Point" ,
+  //              coordinates : [-122, 37.443902444762696] },
+  //           $maxDistance : 10
+  //         }
+  //      }
+  //   }).then(res => console.log(res))
+  // Business.find({}, (err, docs) => {
+  //   if (err) {
+  //     console.log(err);
+  //     res.json(err)
+  //   }
+  //   console.log(docs);
+  //   res.send(docs)
+  // })
+  Business.aggregate(
+    [
+        { "$geoNear": {
+            "near": {
+                "type": "Point",
+                "coordinates": [-122.41, 37.78]
+            },
+            "distanceField": "distance",
+            "spherical": true,
+            "maxDistance": 100
+        }}
+    ],
+    function(err,results) {
+      console.log(results);
+      res.json(results)
     }
-    console.log(docs);
-    res.send(docs)
-  })
+)
 });
