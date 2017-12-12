@@ -70,7 +70,7 @@ app.post("/users", (req, res) => {
 });
 
 app.get('/businesses', (req, res) => {
-  Business.find({}).toArray((err, docs) => {
+  Business.find({}, (err, docs) => {
     if (err) {
       console.log(err);
       res.json(err)
