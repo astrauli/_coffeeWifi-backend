@@ -72,28 +72,6 @@ app.post("/users", (req, res) => {
 });
 
 app.get('/businesses', (req, res) => {
-  // TODO:
-  //insert logic to fetch shops only a few miles away from current position
-  // req.body.currentPosition
-  // Business.find(
-  //   { loc:
-  //     { $near :
-  //         {
-  //           $geometry : {
-  //              type : "Point" ,
-  //              coordinates : [-122, 37.443902444762696] },
-  //           $maxDistance : 10
-  //         }
-  //      }
-  //   }).then(res => console.log(res))
-  // Business.find({}, (err, docs) => {
-  //   if (err) {
-  //     console.log(err);
-  //     res.json(err)
-  //   }
-  //   console.log(docs);
-  //   res.send(docs)
-  // })
   Business.aggregate(
     [
         { "$geoNear": {
