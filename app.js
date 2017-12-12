@@ -12,8 +12,13 @@ let userSchema = new Schema({
   sub: String
 });
 
-let User = mongoose.model('User', userSchema);
+let businessSchema = new Schema({
+  name: String,
+  coordinates: Object
+})
 
+let User = mongoose.model('User', userSchema);
+let Business = mongoose.model('businesses', businessSchema);
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
@@ -22,7 +27,6 @@ db.once('open', () => {
     let port = server.address().port;
     console.log("App now running on port", port);
   });
-
 });
 
 
@@ -58,6 +62,20 @@ app.post("/users", (req, res) => {
         console.log("created user", doc);
         res.json(doc)
       })
+    } else {
+      console.log("user was found", user);
+      res.json(user);
     }
   });
+});
+
+app.get('/businesses', (req, res) => {
+  Business.find({}).toArray((err, docs) => {
+    if (err) {
+      console.log(err);
+      res.json(err)
+    }
+    console.log(docs);
+    res.send(docs)
+  })
 });
