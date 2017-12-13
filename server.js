@@ -1,48 +1,15 @@
 import express from 'express';
-import mongodb, { MongoClient } from 'mongodb';
-import mongoose, { Schema, Aggregate } from 'mongoose';
+import mongoose, { Aggregate } from 'mongoose';
 import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
+import DB from './db';
+import { User, Business, Review  } from './models';
 // import rsaValidation from 'rsaValidation';
 
 mongoose.Promise = global.Promise;
-// process.env.MONGODB_URI ||
-// 'mongodb://root:bestappever@ds133856.mlab.com:33856/coffeewifi' ||
-mongoose.connect('mongodb://localhost:27017/test'
+
+mongoose.connect(DB || 'mongodb://localhost:27017/test'
 , {useMongoClient: true});
-
-// let userSchema = new Schema({
-//   sub: String,
-//   liked_workspaces: {type: [Schema.Type.ObjectId]}
-// });
-
-let userSchema = new Schema({
-  name: String,
-  title: String,
-  num: Number
-});
-
-
-let businessSchema = new Schema({
-  name: String,
-  loc: { type: {type: String }, coordinates: [Number]},
-  reviews: [{type: Schema.Types.ObjectId}],
-  outlets: Number
-});
-businessSchema.index({'loc': '2dsphere'});
-
-let reviewsSchema = new Schema({
-  user_id: [{type: Schema.Types.ObjectId}],
-  business_id: [{type: Schema.Types.ObjectId}],
-  stars: Number,
-  review_content: String
-});
-
-
-
-let User = mongoose.model('users', userSchema);
-let Business = mongoose.model('businesses', businessSchema);
-let Review = mongoose.model('reviews', reviewsSchema)
 
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -51,10 +18,6 @@ db.once('open', () => {
     let port = server.address().port;
     console.log("App now running on port", port);
   });
-
-  // User.create({name: "Jeff",
-  //              title: "AA",
-  //              num: 233})
 });
 
 
