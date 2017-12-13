@@ -14,17 +14,17 @@ let userSchema = new Schema({
 
 let businessSchema = new Schema({
   name: {type: String},
-  loc: { type: {type: String }, coordinates: [Number]},
+  loc: {type: {type: String }, coordinates: [Number]},
   reviews: [{type: Schema.Types.ObjectId, ref: 'Review'}],
   outlets: {type: Number, min: 0, max: 5 }
 });
 businessSchema.index({'loc': '2dsphere'});
 
 let reviewsSchema = new Schema({
-  user_id: [{type: Schema.Types.ObjectId, ref: 'User'}],
-  business_id: [{type: Schema.Types.ObjectId, ref: 'Business'}],
+  user_id: {type: Schema.Types.ObjectId, ref: 'User'},
+  business_id: {type: Schema.Types.ObjectId, ref: 'Business'},
   stars: {type: Number, min: 0, max: 5},
-  review_content: {type: String}
+  content: {type: String}
 });
 
 export const User = mongoose.model('users', userSchema);

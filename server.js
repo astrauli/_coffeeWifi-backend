@@ -88,7 +88,42 @@ app.get('/business/:id/reviews', (req, res) => {
         res.json(err);
       }
       console.log(business);
+      // TODO:
+      //need to extract content from ids
       res.json(business.reviews);
+  });
+});
+
+app.post('/business/:id/reviews', (req, res) => {
+  let { id } = req.params;
+  let { user, review } = req.body;
+  //might need to save newReview from the callback function instead
+  let newReview = Review.create({"user_id": user._id, "business_id": ObjectId(id), "stars": review.stars, "content": review.content}, (err,review) => {
+    if(err) {
+      res.json(err)
+    }
+  });
+
+  User.findOne({"_id": user._id}, (err, user) => {
+    if(err) {
+      res.json(err);
+    }
+    let user_reviews = user.reviews;
+    user_reviews.push(newReview._id);
+    user.save();
+  });
+
+  Business.findOne({ "_id": ObjectId(id)}, (err, business) => {
+      if (err) {
+        console.log(err);
+        res.json(err);
+      }
+      console.log(business);
+      // TODO:
+      //need to extract content from ids
+      let business_reviews = business.reviews.
+      business_reviews.push(newReview._id);
+      business.save();
   })
 });
 
@@ -106,6 +141,7 @@ app.post('/filter', (req,res) => {
 
 app.get('/businesses', (req, res) => {
   let { location, radius } = req.body;
+
   let aggregate = initiateAggregate(Business);
   aggregate = addLocationFilter(aggregate, location, radius);
   result = executeAggregate(aggregate);
