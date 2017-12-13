@@ -2,6 +2,8 @@ import express from 'express';
 import mongodb, { MongoClient } from 'mongodb';
 import mongoose, { Schema, Aggregate } from 'mongoose';
 import bodyParser from 'body-parser';
+import jwt from 'express-jwt';
+import rsaValidation from 'rsaValidation';
 
 mongoose.Promise = global.Promise;
 // process.env.MONGODB_URI ||
@@ -23,13 +25,25 @@ let userSchema = new Schema({
 
 let businessSchema = new Schema({
   name: String,
-  loc: { type: {type: String }, coordinates: [Number]}
+  loc: { type: {type: String }, coordinates: [Number]},
+  reviews: {type: [Schema.Type.ObjectId]},
+  outlets: Number
 });
+
+let reviewsSchema = new Schema({
+  user_id: Schema.Type.ObjecId,
+  business_id: Schema.Type.ObjectId,
+  stars: Number,
+  review_content: String
+});
+
 businessSchema.index({'loc': '2dsphere'});
 
 
-let User = mongoose.model('User', userSchema);
+let User = mongoose.model('users', userSchema);
 let Business = mongoose.model('businesses', businessSchema);
+let Review = mongoose.model('reviews', reviewsSchema)
+
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
@@ -49,6 +63,23 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(bodyParser.json());
+// TODO: ACTIVATE jwt
+// var jwtCheck = jwt({
+//   secret: rsaValidation(),
+//   algorithms: ['RS256'],
+//   issuer: "https://YOUR-AUTH0-DOMAIN.auth0.com/",
+//   audience: 'https://movieanalyst.com'
+// });
+//
+// app.use(jwtCheck);
+
+// If we do not get the correct credentials, we’ll return an appropriate message
+app.use(function (err, req, res, next) {
+  if (err.name === 'UnauthorizedError') {
+    res.status(401).json({message:'Missing or invalid token'});
+  }
+});
+
 
 app.get('/testinsert', (req, res) => {
   console.log("on test");
@@ -101,7 +132,7 @@ app.post('/filter', (req,res) => {
    radius = filter.radius;
    location = filter.location;
    outlets = filter.outlets;
-   
+
 //start filter
    aggregate = Business.aggregate()
 
