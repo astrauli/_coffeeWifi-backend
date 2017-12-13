@@ -3,7 +3,7 @@ import mongodb, { MongoClient } from 'mongodb';
 import mongoose, { Schema, Aggregate } from 'mongoose';
 import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
-import rsaValidation from 'rsaValidation';
+// import rsaValidation from 'rsaValidation';
 
 mongoose.Promise = global.Promise;
 // process.env.MONGODB_URI ||
@@ -26,18 +26,18 @@ let userSchema = new Schema({
 let businessSchema = new Schema({
   name: String,
   loc: { type: {type: String }, coordinates: [Number]},
-  reviews: {type: [Schema.Type.ObjectId]},
+  reviews: [{type: Schema.Types.ObjectId}],
   outlets: Number
 });
+businessSchema.index({'loc': '2dsphere'});
 
 let reviewsSchema = new Schema({
-  user_id: Schema.Type.ObjecId,
-  business_id: Schema.Type.ObjectId,
+  user_id: [{type: Schema.Types.ObjectId}],
+  business_id: [{type: Schema.Types.ObjectId}],
   stars: Number,
   review_content: String
 });
 
-businessSchema.index({'loc': '2dsphere'});
 
 
 let User = mongoose.model('users', userSchema);
