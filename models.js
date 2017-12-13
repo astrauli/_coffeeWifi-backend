@@ -1,24 +1,30 @@
 import mongoose, { Schema } from 'mongoose';
 
+
+// TODO: Add required
+// required: true
+
 let userSchema = new Schema({
-  name: String,
-  title: String,
-  num: Number
+  name: {type: String},
+  sub: {type: String},
+  email: {type: String},
+  reviews: [{type: Schema.Types.ObjectId, ref: 'Review'}],
+  liked_locations: [{type: Schema.Types.ObjectId, ref: 'Business'}]
 });
 
 let businessSchema = new Schema({
-  name: String,
+  name: {type: String},
   loc: { type: {type: String }, coordinates: [Number]},
-  reviews: [{type: Schema.Types.ObjectId}],
-  outlets: Number
+  reviews: [{type: Schema.Types.ObjectId, ref: 'Review'}],
+  outlets: {type: Number, min: 0, max: 5 }
 });
 businessSchema.index({'loc': '2dsphere'});
 
 let reviewsSchema = new Schema({
-  user_id: [{type: Schema.Types.ObjectId}],
-  business_id: [{type: Schema.Types.ObjectId}],
-  stars: Number,
-  review_content: String
+  user_id: [{type: Schema.Types.ObjectId, ref: 'User'}],
+  business_id: [{type: Schema.Types.ObjectId, ref: 'Business'}],
+  stars: {type: Number, min: 0, max: 5},
+  review_content: {type: String}
 });
 
 export const User = mongoose.model('users', userSchema);

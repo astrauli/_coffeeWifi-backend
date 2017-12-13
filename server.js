@@ -4,11 +4,12 @@ import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
 import DB from './db';
 import { User, Business, Review  } from './models';
-// import rsaValidation from 'rsaValidation';
+import rsaValidation from 'auth0-api-jwt-rsa-validation';
+
 
 mongoose.Promise = global.Promise;
-
-mongoose.connect(DB || 'mongodb://localhost:27017/test'
+// DB ||
+mongoose.connect('mongodb://localhost:27017/test'
 , {useMongoClient: true});
 
 let db = mongoose.connection;
