@@ -5,7 +5,7 @@ import jwt from 'express-jwt';
 import DB from './db';
 import { User, Business, Review  } from './models';
 import rsaValidation from 'auth0-api-jwt-rsa-validation';
-import { initiateAggregate, addNameFilter, addLocationFilter, addOutletFilter } from './query_functions';
+import { initiateAggregate, addNameFilter, addLocationFilter, addOutletFilter, executeAggregate } from './query_functions';
 
 
 mongoose.Promise = global.Promise;
@@ -45,26 +45,19 @@ app.use(function (err, req, res, next) {
   }
 });
 
-
-app.get('/testinsert', (req, res) => {
-  console.log("on test");
-
-  res.send("hi")
-})
-
 app.get('/', (req, res) => {
-  res.send("HI THERE");
+  res.send("root");
 });
 
 app.post("/users", (req, res) => {
-  // let query = getUsername(req.body);
-  User.findOne(req.body, (err, user) => {
+  let sub = req.body.sub;
+  User.findOne({sub}, (err, user) => {
     if (err) {
       console.log("err",  err);
       res.json(err);
     }
     if (user === null) {
-      User.create({sub: req.body.sub}, (err, doc) => {
+      User.create({sub}, (err, doc) => {
         if(err) {
           console.log(err);
           res.json(err)
@@ -87,33 +80,16 @@ app.post('/filter', (req,res) => {
    aggregate = addNameFilter(aggregate, name);
    aggregate = addLocationFilter(aggregate, location, radius);
    aggregate = addOutletFilter(aggregate, outlets);
-
-   aggregate.exec((err, result) => {
-     if (err) {
-       console.log(err);
-       res.json(err);
-     }
-     console.log(result);
-     res.json(result);
-   })
+   result = executeAggregate(aggregate);
+   console.log(result);
+   res.json(result);
 });
 
 app.get('/businesses', (req, res) => {
-  Business.aggregate(
-    [
-        { "$geoNear": {
-            "near": {
-                "type": "Point",
-                "coordinates": [-122.41, 37.78]
-            },
-            "distanceField": "distance",
-            "spherical": true,
-            "maxDistance": 100
-        }}
-    ],
-    function(err,results) {
-      console.log(results);
-      res.json(results)
-    }
-)
+  let { location, radius } = req.body;
+  let aggregate = initiateAggregate(Business);
+  aggregate = addLocationFilter(aggregate, location, radius);
+  result = executeAggregate(aggregate);
+  console.log(result);
+  res.json(result);
 });
