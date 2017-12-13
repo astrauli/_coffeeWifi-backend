@@ -1,10 +1,11 @@
 import express from 'express';
-import mongoose, { Aggregate } from 'mongoose';
+import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
 import DB from './db';
 import { User, Business, Review  } from './models';
 import rsaValidation from 'auth0-api-jwt-rsa-validation';
+import { initiateAggregate, addNameFilter, addLocationFilter, addOutletFilter } from './query_functions';
 
 
 mongoose.Promise = global.Promise;
@@ -87,34 +88,16 @@ let outlets;
 let query;
 let aggregate;
 let pipeline;
+
 app.post('/filter', (req,res) => {
-  //filter is sent in req body
-   filter = req.body;
+   let { name, radius, location, outlets } = req.body.filter;
 
-  //destructure different filters
-   name = filter.name;
-   radius = filter.radius;
-   location = filter.location;
-   outlets = filter.outlets;
+   aggregate = initiateAggregate(Business);
+   addNameFilter(aggregate, name);
+   addLocationFilter(aggregate, location, radius);
+   addOutletFilter(aggregate, outlets);
+    aggregate = aggregate.match({outlets})
 
-//start filter
-   aggregate = Business.aggregate()
-
-//append to filter if necessary
-   if (name) {
-     aggregate = aggregate.match({name});
-   }
-   if (radius && location) {
-     aggregate = aggregate.near({
-           "near": location,
-           "distanceField": "dist.calculated",
-           "spherical": true,
-           "maxDistance": radius
-     })
-   }
-   if (outlets) {
-     aggregate = aggregate.match({outlets})
-   }
 
    aggregate.exec((err, result) => {
      if (err) {
