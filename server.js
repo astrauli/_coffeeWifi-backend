@@ -72,6 +72,18 @@ app.post("/users", (req, res) => {
   })
 });
 
+app.get('/user/:id/reviews', (req, res) => {
+  let sub = req.params.id;
+  User.findOne({sub}, (err, result) => {
+    res.json(result.reviews)
+  });
+});
+
+app.post('/reviews', (req, res) => {
+
+})
+
+app.post('/user/:id/')
 
 app.post('/filter', (req,res) => {
    let { name, radius, location, outlets } = req.body.filter;
