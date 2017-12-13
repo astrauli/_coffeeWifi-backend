@@ -79,25 +79,14 @@ app.post("/users", (req, res) => {
   });
 });
 
-//test
-let filter;
-let name;
-let radius;
-let location;
-let outlets;
-let query;
-let aggregate;
-let pipeline;
 
 app.post('/filter', (req,res) => {
    let { name, radius, location, outlets } = req.body.filter;
 
-   aggregate = initiateAggregate(Business);
-   addNameFilter(aggregate, name);
-   addLocationFilter(aggregate, location, radius);
-   addOutletFilter(aggregate, outlets);
-    aggregate = aggregate.match({outlets})
-
+   let aggregate = initiateAggregate(Business);
+   aggregate = addNameFilter(aggregate, name);
+   aggregate = addLocationFilter(aggregate, location, radius);
+   aggregate = addOutletFilter(aggregate, outlets);
 
    aggregate.exec((err, result) => {
      if (err) {
