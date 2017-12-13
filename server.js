@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import { ObjectId } from 'mongodb';
 import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
 import DB from './db';
@@ -79,11 +80,17 @@ app.get('/user/:id/reviews', (req, res) => {
   });
 });
 
-app.post('/reviews', (req, res) => {
-
-})
-
-app.post('/user/:id/')
+app.get('/business/:id/reviews', (req, res) => {
+  let { id } = req.params;
+  Business.findOne({ "_id": ObjectId(id)}, (err, business) => {
+      if (err) {
+        console.log(err);
+        res.json(err);
+      }
+      console.log(business);
+      res.json(business.reviews);
+  })
+});
 
 app.post('/filter', (req,res) => {
    let { name, radius, location, outlets } = req.body.filter;
