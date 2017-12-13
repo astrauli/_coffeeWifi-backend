@@ -1,6 +1,6 @@
 
 export const initiateAggregate = (model) => (
-  model.aggregate();
+  model.aggregate()
 );
 
 export const addNameFilter = (aggregate, name = undefined) => {
