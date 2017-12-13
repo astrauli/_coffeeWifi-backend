@@ -1,3 +1,4 @@
+import { User } from './models';
 
 export const initiateAggregate = (model) => (
   model.aggregate()
@@ -29,4 +30,4 @@ export const executeAggregate = aggregate => {
       return result;
     }
   })
-}
+};

@@ -28,6 +28,7 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(bodyParser.json());
+
 // TODO: ACTIVATE jwt
 // var jwtCheck = jwt({
 //   secret: rsaValidation(),
@@ -39,37 +40,36 @@ app.use(bodyParser.json());
 // app.use(jwtCheck);
 
 // If we do not get the correct credentials, we’ll return an appropriate message
-app.use(function (err, req, res, next) {
-  if (err.name === 'UnauthorizedError') {
-    res.status(401).json({message:'Missing or invalid token'});
-  }
-});
+// app.use(function (err, req, res, next) {
+//   if (err.name === 'UnauthorizedError') {
+//     res.status(401).json({message:'Missing or invalid token'});
+//   }
+// });
 
 app.get('/', (req, res) => {
   res.send("root");
 });
 
 app.post("/users", (req, res) => {
-  let sub = req.body.sub;
-  User.findOne({sub}, (err, user) => {
+  let unique_id = req.body.sub;
+  let query = User.findOne({sub: unique_id});
+  query.exec((err, user) => {
     if (err) {
-      console.log("err",  err);
       res.json(err);
-    }
-    if (user === null) {
-      User.create({sub}, (err, doc) => {
+    } else if (user === null) {
+      User.create({sub: unique_id}, (err, doc) => {
         if(err) {
           console.log(err);
-          res.json(err)
+          res.json(err);
         }
         console.log("created user", doc);
-        res.json(doc)
+          res.json(doc);
       })
     } else {
       console.log("user was found", user);
       res.json(user);
     }
-  });
+  })
 });
 
 
