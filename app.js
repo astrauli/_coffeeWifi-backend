@@ -93,17 +93,19 @@ let query;
 let aggregate;
 let pipeline;
 app.post('/filter', (req,res) => {
+  //filter is sent in req body
    filter = req.body;
-  //  console.log(filter);
+
+  //destructure different filters
    name = filter.name;
-   console.log(name);
    radius = filter.radius;
    location = filter.location;
    outlets = filter.outlets;
-   console.log("r", radius);
-   console.log("l", location);
-   console.log("o", outlets);
+   
+//start filter
    aggregate = Business.aggregate()
+
+//append to filter if necessary
    if (name) {
      aggregate = aggregate.match({name});
    }
@@ -114,7 +116,6 @@ app.post('/filter', (req,res) => {
            "spherical": true,
            "maxDistance": radius
      })
-    //  console.log(aggregate.pipeline());
    }
    if (outlets) {
      aggregate = aggregate.match({outlets})
