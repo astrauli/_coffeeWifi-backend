@@ -10,8 +10,8 @@ import { initiateAggregate, addNameFilter, addLocationFilter, addOutletFilter, e
 
 
 mongoose.Promise = global.Promise;
-//
-mongoose.connect(DB || 'mongodb://localhost:27017/test'
+// DB ||
+mongoose.connect('mongodb://localhost:27017/test'
 , {useMongoClient: true});
 
 let db = mongoose.connection;
@@ -64,7 +64,7 @@ app.post("/users", (req, res) => {
         }
           res.json(new_user);
       })
-    } else {h
+    } else {
       res.json(user);
     }
   })
@@ -138,5 +138,23 @@ app.get('/businesses', (req, res) => {
   let result = executeAggregate(aggregate);
   result.then(info => {
     res.json(info);
+  });
+});
+
+app.get('/business/:id/food', (req, res) => {
+
+});
+
+app.get('/business/:id/drinks', (req, res) => {
+
+});
+
+app.get('/business/:id/stats', (req, res) => {
+  let { id } = req.params
+  Business.findOne({"_id": ObjectId(id)}, (err, business) => {
+    if (err) {
+      res.json(err);
+    }
+    res.json(business.stats)
   });
 });
