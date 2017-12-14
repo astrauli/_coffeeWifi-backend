@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
 import DB from './db';
-import { User, Business, Review, Item  } from './models';
+import { User, Business, Review, Item } from './models';
 import rsaValidation from 'auth0-api-jwt-rsa-validation';
 import { initiateAggregate, addNameFilter, addLocationFilter, addOutletFilter, executeAggregate } from './query_functions';
 

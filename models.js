@@ -14,9 +14,21 @@ let userSchema = new Schema({
 
 let businessSchema = new Schema({
   name: {type: String},
-  loc: {type: {type: String }, coordinates: [Number]},
+  loc: {type: {type: String}, coordinates: [Number]},
   reviews: [{type: Schema.Types.ObjectId, ref: 'Review'}],
-  outlets: {type: Number, min: 0, max: 5 }
+  outlets: {type: Number, min: 0, max: 5 },
+  menu: {
+    food: [{type: Schema.Types.ObjectId}],
+    drink: [{type: Schema.Types.ObjectId}]
+  },
+  stats: {
+    coffeeRating: {type: Number},
+    foodRating: {type: Number},
+    wifiRating: {type: Number},
+    volumeRating: {type: Number},
+    tempRating: {type: Number},
+    outletsRating: {type: Number}
+  }
 });
 businessSchema.index({'loc': '2dsphere'});
 
