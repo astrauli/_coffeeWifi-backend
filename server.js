@@ -59,13 +59,13 @@ app.post("/users", (req, res) => {
     if (err) {
       res.json(err);
     } else if (user === null) {
-      User.create({sub: unique_id}, (err, doc) => {
+      User.create({sub: unique_id}, (err, new_user) => {
         if(err) {
           console.log(err);
           res.json(err);
         }
-        console.log("created user", doc);
-          res.json(doc);
+        console.log("created user", new_user);
+          res.json(new_user);
       })
     } else {
       console.log("user was found", user);
@@ -75,45 +75,33 @@ app.post("/users", (req, res) => {
 });
 
 app.get('/user/:id/reviews', (req, res) => {
-  let sub = req.params.id;
-  User.findOne({sub}, (err, result) => {
-    res.json(result.reviews)
-  });
+  let id = req.params.id;
+  Review.find({"user_id": ObjectId(id)}, (err, reviews) => {
+    if (err) {
+      res.json(err);
+    }
+    res.json(reviews)
+  })
+
 });
 
 app.get('/business/:id/reviews', (req, res) => {
   let { id } = req.params;
-  Business.findOne({ "_id": ObjectId(id)}, (err, business) => {
-      if (err) {
-        console.log(err);
-        res.json(err);
-      }
-      console.log("business", business);
-      // TODO:
-      //need to extract content from ids
-      let allReviews = [];
-      business.reviews.forEach(reviewId => {
-        Review.findOne({"_id": reviewId}, (err, doc) => {
-          if (err) {
-            res.json(err);
-          }
-          console.log(doc);
-          allReviews.push(doc);
-        });
-      });
-      res.json(allReviews);
-  });
+  Review.find({"business_id": ObjectId(id)}, (err, reviews) => {
+    if (err) {
+      res.json(err);
+    }
+    res.json(reviews);
+  })
 });
 
 app.post('/business/:id/reviews', (req, res) => {
   let { id } = req.params;
   let { user, review } = req.body;
-  Review.create({"user_id": ObjectId(user.id), "business_id": ObjectId(id), "stars": review.stars, "content": review.content}, (err,review) => {
+  Review.create({"user_id": ObjectId(user.id), "business_id": ObjectId(id), "stars": review.stars, "content": review.content, "name": user.name}, (err,review) => {
     if(err) {
       res.json("review creation err", err)
     }
-    console.log("review", review);
-
     User.findOneAndUpdate({"_id": ObjectId(user.id)}, {"$push": {"reviews": review._id}}, {"new": true}, (err,user) => {
       if(err) {
         res.json(err)
@@ -123,7 +111,6 @@ app.post('/business/:id/reviews', (req, res) => {
       if (err) {
         res.json(err)
       }
-
       Review.find({"_id": {"$in": business.reviews}}, (err, docs) => {
         res.json(docs);
       })

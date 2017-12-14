@@ -23,10 +23,11 @@ businessSchema.index({'loc': '2dsphere'});
 let reviewsSchema = new Schema({
   user_id: {type: Schema.Types.ObjectId, ref: 'User'},
   business_id: {type: Schema.Types.ObjectId, ref: 'Business'},
+  name: {type: String},
   stars: {type: Number, min: 0, max: 5},
   content: {type: String}
 });
 
 export const User = mongoose.model('users', userSchema);
 export const Business = mongoose.model('businesses', businessSchema);
-export const Review = mongoose.model('reviews', reviewsSchema)
+export const Review = mongoose.model('reviews', reviewsSchema);
