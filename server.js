@@ -21,6 +21,7 @@ db.once('open', () => {
     let port = server.address().port;
     console.log("App now running on port", port);
   });
+  // User.create({name: "aaron", reviews: []})
 });
 
 
@@ -87,54 +88,41 @@ app.get('/business/:id/reviews', (req, res) => {
         console.log(err);
         res.json(err);
       }
-      console.log(business);
+      console.log("business", business);
       // TODO:
       //need to extract content from ids
-      res.json(business.reviews);
+      let allReviews = [];
+      business.reviews.forEach(reviewId => {
+        Review.findOne({"_id": reviewId}, (err, doc) => {
+          if (err) {
+            res.json(err);
+          }
+          console.log(doc);
+          allReviews.push(doc);
+        });
+      });
+      res.json(allReviews);
   });
 });
 
 app.post('/business/:id/reviews', (req, res) => {
   let { id } = req.params;
   let { user, review } = req.body;
-  //might need to save newReview from the callback function instead
-  let newReview = Review.create({"user_id": user._id, "business_id": ObjectId(id), "stars": review.stars, "content": review.content}, (err,review) => {
+  Review.create({"user_id": ObjectId(user.id), "business_id": ObjectId(id), "stars": review.stars, "content": review.content}, (err,review) => {
     if(err) {
-      res.json(err)
+      res.json("review creation err", err)
     }
-  });
-  // TODO:
-  //assuming user contains _id
-  User.findOne({"_id": user._id}, (err, user) => {
-    if(err) {
-      res.json(err);
-    }
-    let user_reviews = user.reviews;
-    user_reviews.push(newReview._id);
-    user.save();
-  });
-
-  Business.findOne({ "_id": ObjectId(id)}, (err, business) => {
-      if (err) {
-        console.log(err);
-        res.json(err);
+    console.log("review", review);
+    User.update({"_id": ObjectId(user.id)}, {"$push": {"reviews": review._id}}, (err,user) => {
+      if(err) {
+        res.json(err)
       }
-      console.log(business);
-      // TODO:
-      let business_reviews = business.reviews.
-      business_reviews.push(newReview._id);
-      business.save();
-      //need to extract content from ids
-      let allReviews = [];
-      business_reviews.forEach(reviewId => {
-        Review.findOne({"_id": reviewId}, (err, doc) => {
-          if (err) {
-            res.json(err);
-          }
-          allReviews.push(doc);
-        });
-      });
-      res.json(reviews);
+    });
+    Business.update({"_id": ObjectId(id)}, {"$push": {"reviews": review._id}}, (err, business) => {
+      if (err) {
+        res.json(err)
+      }
+    })
   });
 });
 
