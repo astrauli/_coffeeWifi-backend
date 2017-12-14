@@ -152,7 +152,13 @@ app.get('/business/:id/food', (req, res) => {
 });
 
 app.get('/business/:id/drinks', (req, res) => {
-
+  let { id } = req.params
+  Item.find({"business_id": ObjectId(id), "type": "drink"}, (err, drinkItems) => {
+    if (err) {
+      res.json(err)
+    }
+    res.json(drinkItems)
+  });
 });
 
 app.get('/business/:id/stats', (req, res) => {
