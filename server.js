@@ -10,8 +10,8 @@ import { initiateAggregate, addNameFilter, addLocationFilter, addOutletFilter, e
 
 
 mongoose.Promise = global.Promise;
-//
-mongoose.connect( DB || 'mongodb://localhost:27017/test'
+// DB ||
+mongoose.connect('mongodb://localhost:27017/test'
 , {useMongoClient: true});
 
 let db = mongoose.connection;
@@ -61,14 +61,11 @@ app.post("/users", (req, res) => {
     } else if (user === null) {
       User.create({sub: unique_id}, (err, new_user) => {
         if(err) {
-          console.log(err);
           res.json(err);
         }
-        console.log("created user", new_user);
           res.json(new_user);
       })
     } else {
-      console.log("user was found", user);
       res.json(user);
     }
   })
@@ -112,6 +109,9 @@ app.post('/business/:id/reviews', (req, res) => {
         res.json(err)
       }
       Review.find({"_id": {"$in": business.reviews}}, (err, docs) => {
+        if (err) {
+          res.json(err);
+        }
         res.json(docs);
       })
     })
@@ -132,10 +132,8 @@ app.post('/filter', (req,res) => {
 });
 
 app.get('/businesses', (req, res) => {
-  console.log(req.query);
   let { latitude, longitude, radius } = req.query;
   let location = [parseFloat(longitude),parseFloat(latitude)];
-  console.log(location);
   let aggregate = initiateAggregate(Business);
   aggregate = addLocationFilter(aggregate, location, parseInt(radius));
   let result = executeAggregate(aggregate);
