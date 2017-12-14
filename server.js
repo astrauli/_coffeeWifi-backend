@@ -10,8 +10,8 @@ import { initiateAggregate, addNameFilter, addLocationFilter, addOutletFilter, e
 
 
 mongoose.Promise = global.Promise;
-// DB ||
-mongoose.connect('mongodb://localhost:27017/test'
+//
+mongoose.connect( DB || 'mongodb://localhost:27017/test'
 , {useMongoClient: true});
 
 let db = mongoose.connection;
