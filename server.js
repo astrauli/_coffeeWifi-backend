@@ -103,7 +103,8 @@ app.post('/business/:id/reviews', (req, res) => {
       res.json(err)
     }
   });
-
+  // TODO:
+  //assuming user contains _id
   User.findOne({"_id": user._id}, (err, user) => {
     if(err) {
       res.json(err);
@@ -120,11 +121,21 @@ app.post('/business/:id/reviews', (req, res) => {
       }
       console.log(business);
       // TODO:
-      //need to extract content from ids
       let business_reviews = business.reviews.
       business_reviews.push(newReview._id);
       business.save();
-  })
+      //need to extract content from ids
+      let allReviews = [];
+      business_reviews.forEach(reviewId => {
+        Review.findOne({"_id": reviewId}, (err, doc) => {
+          if (err) {
+            res.json(err);
+          }
+          allReviews.push(doc);
+        });
+      });
+      res.json(reviews);
+  });
 });
 
 app.post('/filter', (req,res) => {
