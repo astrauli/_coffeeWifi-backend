@@ -142,7 +142,13 @@ app.get('/businesses', (req, res) => {
 });
 
 app.get('/business/:id/food', (req, res) => {
-
+  let { id } = req.params
+  Item.find({"business_id": ObjectId(id), "type": "food"}, (err, foodItems) => {
+    if (err) {
+      res.json(err)
+    }
+    res.json(foodItems)
+  });
 });
 
 app.get('/business/:id/drinks', (req, res) => {
