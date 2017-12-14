@@ -125,17 +125,21 @@ app.post('/filter', (req,res) => {
    aggregate = addNameFilter(aggregate, name);
    aggregate = addLocationFilter(aggregate, location, radius);
    aggregate = addOutletFilter(aggregate, outlets);
-   result = executeAggregate(aggregate);
-   console.log(result);
-   res.json(result);
+   let result = executeAggregate(aggregate);
+   result.then(info => {
+     res.json(info);
+   });
 });
 
 app.get('/businesses', (req, res) => {
-  let { location, radius } = req.body;
-
+  console.log(req.query);
+  let { latitude, longitude, radius } = req.query;
+  let location = [parseFloat(longitude),parseFloat(latitude)];
+  console.log(location);
   let aggregate = initiateAggregate(Business);
-  aggregate = addLocationFilter(aggregate, location, radius);
-  result = executeAggregate(aggregate);
-  console.log(result);
-  res.json(result);
+  aggregate = addLocationFilter(aggregate, location, parseInt(radius));
+  let result = executeAggregate(aggregate);
+  result.then(info => {
+    res.json(info);
+  });
 });

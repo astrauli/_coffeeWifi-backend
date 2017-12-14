@@ -13,6 +13,7 @@ export const addLocationFilter = (aggregate, location = undefined, radius_in_mil
                                     "near": location,
                                     "spherical": true,
                                     "maxDistance": radius_in_miles,
+                                    "distanceField": "distance",
                                     "distanceMultiplier": 3963.2
                                   })
                   : aggregate
@@ -23,7 +24,7 @@ export const addOutletFilter = (aggregate, outlets = undefined) => {
 };
 
 export const executeAggregate = aggregate => {
-  aggregate.exec((err, result) => {
+  return aggregate.exec((err, result) => {
     if (err) {
       return err;
     } else {
