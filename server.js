@@ -113,15 +113,20 @@ app.post('/business/:id/reviews', (req, res) => {
       res.json("review creation err", err)
     }
     console.log("review", review);
-    User.update({"_id": ObjectId(user.id)}, {"$push": {"reviews": review._id}}, (err,user) => {
+
+    User.findOneAndUpdate({"_id": ObjectId(user.id)}, {"$push": {"reviews": review._id}}, {"new": true}, (err,user) => {
       if(err) {
         res.json(err)
       }
     });
-    Business.update({"_id": ObjectId(id)}, {"$push": {"reviews": review._id}}, (err, business) => {
+    Business.findOneAndUpdate({"_id": ObjectId(id)}, {"$push": {"reviews": review._id}}, {"new": true}, (err, business) => {
       if (err) {
         res.json(err)
       }
+
+      Review.find({"_id": {"$in": business.reviews}}, (err, docs) => {
+        res.json(docs);
+      })
     })
   });
 });
