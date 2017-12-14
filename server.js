@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
 import DB from './db';
-import { User, Business, Review  } from './models';
+import { User, Business, Review, Item } from './models';
 import rsaValidation from 'auth0-api-jwt-rsa-validation';
 import { initiateAggregate, addNameFilter, addLocationFilter, addOutletFilter, executeAggregate } from './query_functions';
 
@@ -58,73 +58,63 @@ app.post("/users", (req, res) => {
     if (err) {
       res.json(err);
     } else if (user === null) {
-      User.create({sub: unique_id}, (err, doc) => {
+      User.create({sub: unique_id}, (err, new_user) => {
         if(err) {
-          console.log(err);
           res.json(err);
         }
-        console.log("created user", doc);
-          res.json(doc);
+          res.json(new_user);
       })
     } else {
-      console.log("user was found", user);
       res.json(user);
     }
   })
 });
 
 app.get('/user/:id/reviews', (req, res) => {
-  let sub = req.params.id;
-  User.findOne({sub}, (err, result) => {
-    res.json(result.reviews)
-  });
+  let id = req.params.id;
+  Review.find({"user_id": ObjectId(id)}, (err, reviews) => {
+    if (err) {
+      res.json(err);
+    }
+    res.json(reviews)
+  })
+
 });
 
 app.get('/business/:id/reviews', (req, res) => {
   let { id } = req.params;
-  Business.findOne({ "_id": ObjectId(id)}, (err, business) => {
-      if (err) {
-        console.log(err);
-        res.json(err);
-      }
-      console.log(business);
-      // TODO:
-      //need to extract content from ids
-      res.json(business.reviews);
-  });
+  Review.find({"business_id": ObjectId(id)}, (err, reviews) => {
+    if (err) {
+      res.json(err);
+    }
+    res.json(reviews);
+  })
 });
 
 app.post('/business/:id/reviews', (req, res) => {
   let { id } = req.params;
   let { user, review } = req.body;
-  //might need to save newReview from the callback function instead
-  let newReview = Review.create({"user_id": user._id, "business_id": ObjectId(id), "stars": review.stars, "content": review.content}, (err,review) => {
+  Review.create({"user_id": ObjectId(user.id), "business_id": ObjectId(id), "stars": review.stars, "content": review.content, "name": user.name}, (err,review) => {
     if(err) {
-      res.json(err)
+      res.json("review creation err", err)
     }
-  });
-
-  User.findOne({"_id": user._id}, (err, user) => {
-    if(err) {
-      res.json(err);
-    }
-    let user_reviews = user.reviews;
-    user_reviews.push(newReview._id);
-    user.save();
-  });
-
-  Business.findOne({ "_id": ObjectId(id)}, (err, business) => {
-      if (err) {
-        console.log(err);
-        res.json(err);
+    User.findOneAndUpdate({"_id": ObjectId(user.id)}, {"$push": {"reviews": review._id}}, {"new": true}, (err,user) => {
+      if(err) {
+        res.json(err)
       }
-      console.log(business);
-      // TODO:
-      //need to extract content from ids
-      let business_reviews = business.reviews.
-      business_reviews.push(newReview._id);
-      business.save();
-  })
+    });
+    Business.findOneAndUpdate({"_id": ObjectId(id)}, {"$push": {"reviews": review._id}}, {"new": true}, (err, business) => {
+      if (err) {
+        res.json(err)
+      }
+      Review.find({"_id": {"$in": business.reviews}}, (err, docs) => {
+        if (err) {
+          res.json(err);
+        }
+        res.json(docs);
+      })
+    })
+  });
 });
 
 app.post('/filter', (req,res) => {
@@ -134,17 +124,49 @@ app.post('/filter', (req,res) => {
    aggregate = addNameFilter(aggregate, name);
    aggregate = addLocationFilter(aggregate, location, radius);
    aggregate = addOutletFilter(aggregate, outlets);
-   result = executeAggregate(aggregate);
-   console.log(result);
-   res.json(result);
+   let result = executeAggregate(aggregate);
+   result.then(info => {
+     res.json(info);
+   });
 });
 
 app.get('/businesses', (req, res) => {
-  let { location, radius } = req.body;
-
+  let { latitude, longitude, radius } = req.query;
+  let location = [parseFloat(longitude),parseFloat(latitude)];
   let aggregate = initiateAggregate(Business);
-  aggregate = addLocationFilter(aggregate, location, radius);
-  result = executeAggregate(aggregate);
-  console.log(result);
-  res.json(result);
+  aggregate = addLocationFilter(aggregate, location, parseInt(radius));
+  let result = executeAggregate(aggregate);
+  result.then(info => {
+    res.json(info);
+  });
+});
+
+app.get('/business/:id/food', (req, res) => {
+  let { id } = req.params
+  Item.find({"business_id": ObjectId(id), "type": "food"}, (err, foodItems) => {
+    if (err) {
+      res.json(err)
+    }
+    res.json(foodItems)
+  });
+});
+
+app.get('/business/:id/drinks', (req, res) => {
+  let { id } = req.params
+  Item.find({"business_id": ObjectId(id), "type": "drink"}, (err, drinkItems) => {
+    if (err) {
+      res.json(err)
+    }
+    res.json(drinkItems)
+  });
+});
+
+app.get('/business/:id/stats', (req, res) => {
+  let { id } = req.params
+  Business.findOne({"_id": ObjectId(id)}, (err, business) => {
+    if (err) {
+      res.json(err);
+    }
+    res.json(business.stats)
+  });
 });
