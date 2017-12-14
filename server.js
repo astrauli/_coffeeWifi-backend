@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 import bodyParser from 'body-parser';
 import jwt from 'express-jwt';
 import DB from './db';
-import { User, Business, Review  } from './models';
+import { User, Business, Review, Item  } from './models';
 import rsaValidation from 'auth0-api-jwt-rsa-validation';
 import { initiateAggregate, addNameFilter, addLocationFilter, addOutletFilter, executeAggregate } from './query_functions';
 
@@ -21,7 +21,6 @@ db.once('open', () => {
     let port = server.address().port;
     console.log("App now running on port", port);
   });
-  // User.create({name: "aaron", reviews: []})
 });
 
 

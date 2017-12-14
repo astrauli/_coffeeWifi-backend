@@ -28,6 +28,16 @@ let reviewsSchema = new Schema({
   content: {type: String}
 });
 
+let itemsSchema = new Schema({
+  name: {type: String},
+  business_id: {type: Schema.Types.ObjectId}
+  price: {type: Number},
+  description: {type: String},
+  image: {type: String},
+  type: {type: String, enum: ["food", "drink"]}
+})
+
 export const User = mongoose.model('users', userSchema);
 export const Business = mongoose.model('businesses', businessSchema);
 export const Review = mongoose.model('reviews', reviewsSchema);
+export const Item = mongoose.model('items', itemsSchema);
