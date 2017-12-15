@@ -1,3 +1,3 @@
-const databases = process.env.MONGODB_URIS
+const databases = process.env.MONGODB_URI
 
 export default databases;
