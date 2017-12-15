@@ -42,7 +42,7 @@ let reviewsSchema = new Schema({
 
 let itemsSchema = new Schema({
   name: {type: String},
-  business_id: {type: Schema.Types.ObjectId}
+  business_id: {type: Schema.Types.ObjectId},
   price: {type: Number},
   description: {type: String},
   image: {type: String},
