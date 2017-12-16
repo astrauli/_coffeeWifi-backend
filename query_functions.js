@@ -8,13 +8,12 @@ export const addNameFilter = (aggregate, name = undefined) => {
   return name ? aggregate.match({name}) : aggregate;
 };
 
-export const addLocationFilter = (aggregate, location = undefined, radius_in_miles = 1) => {
+export const addLocationFilter = (aggregate, location, radius_in_miles) => {
   return location ? aggregate.near({
                                     "near": location,
                                     "spherical": true,
-                                    "maxDistance": radius_in_miles,
+                                    "maxDistance": radius_in_miles * 1609.34,
                                     "distanceField": "distance",
-                                    "distanceMultiplier": 3963.2
                                   })
                   : aggregate
 };

@@ -121,8 +121,8 @@ app.post('/filter', (req,res) => {
    let { name, radius, location, outlets } = req.body.filter;
 
    let aggregate = initiateAggregate(Business);
-   aggregate = addNameFilter(aggregate, name);
    aggregate = addLocationFilter(aggregate, location, radius);
+   aggregate = addNameFilter(aggregate, name);
    aggregate = addOutletFilter(aggregate, outlets);
    let result = executeAggregate(aggregate);
    result.then(info => {
@@ -135,6 +135,7 @@ app.get('/businesses', (req, res) => {
   let location = [parseFloat(longitude),parseFloat(latitude)];
   let aggregate = initiateAggregate(Business);
   aggregate = addLocationFilter(aggregate, location, parseFloat(radius));
+  console.log(aggregate._pipeline[0].$geoNear);
   let result = executeAggregate(aggregate);
   result.then(info => {
     res.json(info);
