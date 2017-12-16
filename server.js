@@ -132,9 +132,12 @@ app.post('/filter', (req,res) => {
 
 app.get('/businesses', (req, res) => {
   let { latitude, longitude, radius } = req.query;
+  console.log("lat", latitude);
+  console.log("lon", longitude);
+  console.log("radius", radius);
   let location = [parseFloat(longitude),parseFloat(latitude)];
   let aggregate = initiateAggregate(Business);
-  aggregate = addLocationFilter(aggregate, location, parseInt(radius));
+  aggregate = addLocationFilter(aggregate, location, parseFloat(radius));
   let result = executeAggregate(aggregate);
   result.then(info => {
     res.json(info);
