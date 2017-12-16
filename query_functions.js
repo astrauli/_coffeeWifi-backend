@@ -14,7 +14,7 @@ export const addLocationFilter = (aggregate, location, radius_in_miles) => {
                                     "spherical": true,
                                     "maxDistance": radius_in_miles,
                                     "distanceField": "distance",
-                                    "distanceMultiplier": 1609.34
+                                  
                                   })
                   : aggregate
 };
