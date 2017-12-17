@@ -12,9 +12,9 @@ export const addLocationFilter = (aggregate, location, radius_in_miles) => {
   return location ? aggregate.near({
                                     "near": location,
                                     "spherical": true,
-                                    "maxDistance": radius_in_miles/(1000 * 6378.1),
+                                    "maxDistance": radius_in_miles/(1000 * 6378.1 / 1609.34),
                                     "distanceField": "distance",
-                                    "distanceMultiplier": 1000 * 6378.1
+                                    "distanceMultiplier": 1000 * 6378.1 / 1609.34
                                   })
                   : aggregate
 };
